@@ -1,130 +1,186 @@
-# 05 — Model Evaluation (How Good Is Your Model?)
+# 05 --- Model Evaluation (How Good Is Your Model?)
 
-## What Problem This Solves (Why It Matters in Real Life)
+## Why This Chapter Exists
 
-After building a Machine Learning model we must determine:
+In the previous chapter we trained a machine learning model and used it
+to make predictions.
 
-Is the model good or bad?
+Example:
 
-A model that makes predictions is not necessarily useful.
+``` python
+predictions = model.predict(X_test)
+```
+
+The model gives us answers.
+
+But an important question remains:
+
+**Are those answers good?**
+
+A machine learning model that produces predictions is **not
+automatically useful**.
 
 Examples:
 
-- House price predictions may be far off
-- Fraud models may miss criminals
-- Medical models may misdiagnose patients
+-   A house price model may predict **\$800,000** when the real price is
+    **\$500,000**
+-   A fraud detection model may **miss criminals**
+-   A medical model may **misdiagnose patients**
 
-Model evaluation tells us how accurate predictions are.
+So after training a model, we must measure **how accurate the
+predictions are**.
 
----
+This process is called:
 
-## Simple Explanation (Plain English First)
+**Model Evaluation**
 
-After training a model we compare:
+------------------------------------------------------------------------
 
-Predicted Values vs Real Values
+# The Core Idea
+
+Machine learning evaluation always compares two things:
+
+**Predicted Values vs Real Values**
+Example:
+
+| Real Score | Predicted Score |
+| ---------- | --------------- |
+| 65         | 60              |
+| 80         | 78              |
+| 90         | 92              |
+
 
 Example:
 
-Real → Predicted
+Difference between them is called **error**.
 
-65 → 60
-80 → 78
-90 → 92
+Small error → Good model\
+Large error → Poor model
 
-Difference = Error
+------------------------------------------------------------------------
 
-Small error = Good model
-Large error = Bad model
+# The Machine Learning Pipeline So Far
 
----
+At this point students should see the full workflow:
 
-## Technical Explanation (Accurate but Digestible)
+    Collect Data
+          ↓
+    Split Data (Train / Test)
+          ↓
+    Train Model
+          ↓
+    Make Predictions
+          ↓
+    Evaluate Predictions
 
-Different metrics exist for different problems.
+Chapter 5 focuses on the **last step**.
 
-Regression Metrics:
+------------------------------------------------------------------------
 
-MAE — Mean Absolute Error
-MSE — Mean Squared Error
+# Two Types of Machine Learning Problems
 
-Classification Metric:
+Before choosing evaluation metrics, we must understand **what type of
+problem we are solving**.
 
-Accuracy
+Machine learning problems usually fall into two categories.
 
----
+------------------------------------------------------------------------
 
-### MAE
+## Regression
 
-Average difference between predicted and real values.
+Predicting a **number**.
+
+Examples:
+
+-   House price
+-   Temperature
+-   Sales revenue
+-   Exam score
+
+Example prediction:
+
+    Real: 85
+    Predicted: 82
+
+------------------------------------------------------------------------
+
+## Classification
+
+Predicting a **category**.
+
+Examples:
+
+-   Fraud / Not Fraud
+-   Pass / Fail
+-   Spam / Not Spam
+-   Disease / No Disease
+
+Example prediction:
+
+    Real: Fraud
+    Predicted: Not Fraud
+
+Because these problems are different, **their evaluation metrics are
+also different**.
+
+------------------------------------------------------------------------
+
+# Regression Evaluation
+
+Regression models predict **numbers**, so evaluation focuses on **how
+far predictions are from real values**.
+
+Two common metrics are used.
+
+------------------------------------------------------------------------
+
+## MAE --- Mean Absolute Error
+
+MAE calculates the **average difference** between predictions and real
+values.
+
+Example errors:
+
+    Real: 70   Predicted: 65   Error: 5
+    Real: 80   Predicted: 78   Error: 2
+    Real: 90   Predicted: 88   Error: 2
+
+Average error:
+
+    MAE = (5 + 2 + 2) / 3 = 3
+
+Meaning the model is off by **about 3 points on average**.
 
 Lower MAE is better.
 
----
+------------------------------------------------------------------------
 
-### MSE
+## MSE --- Mean Squared Error
 
-Average squared difference between predicted and real values.
+MSE squares the errors before averaging.
 
-Large errors count more.
+Why?
 
-Lower MSE is better.
-
----
-
-### Accuracy
-
-Percentage of correct predictions.
+Because **large mistakes should be punished more**.
 
 Example:
 
-8 correct out of 10
+    Errors: 5, 2, 2
 
-Accuracy = 80%
+    Squared errors:
+    25, 4, 4
 
-Higher accuracy is better.
+    MSE = (25 + 4 + 4) / 3
 
----
+Large errors become **much more noticeable**.
 
-## Real-World Analogy
+Lower MSE is better.
 
-Weather prediction.
+------------------------------------------------------------------------
 
-Prediction:
+# Regression Code Example
 
-25°C
-
-Actual:
-
-27°C
-
-Error:
-
-2°C
-
-Small error means good prediction.
-
----
-
-## Step-by-Step Example
-
-Goal:
-
-Evaluate exam score predictions.
-
-Train model.
-
-Make predictions.
-
-Compare predicted vs real values.
-
-Calculate error.
-
----
-
-## Code Example (Regression)
-
-```python
+``` python
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
@@ -152,87 +208,143 @@ print("MAE:",mean_absolute_error(y_test,predictions))
 print("MSE:",mean_squared_error(y_test,predictions))
 ```
 
----
+------------------------------------------------------------------------
 
-## Code Example (Classification)
+# Classification Evaluation
 
-```python
+Classification models predict **categories**, not numbers.
+
+So instead of measuring distance between numbers, we measure:
+
+**How many predictions were correct?**
+
+------------------------------------------------------------------------
+
+## Accuracy
+
+Accuracy measures the percentage of correct predictions.
+
+Example:
+
+    Real:      [1,0,1,1,0]
+    Predicted: [1,0,1,0,0]
+
+Correct predictions:
+
+    4 out of 5
+
+Accuracy:
+
+    4 / 5 = 0.8 = 80%
+
+Higher accuracy is better.
+
+------------------------------------------------------------------------
+
+# Classification Code Example
+
+``` python
 from sklearn.metrics import accuracy_score
 
 real = [1,0,1,1,0]
 predicted = [1,0,1,0,0]
 
-print(accuracy_score(real,predicted))
+print("Accuracy:", accuracy_score(real,predicted))
 ```
 
----
+------------------------------------------------------------------------
 
-## Common Mistakes Students Make
+# Real-World Analogy
 
-Thinking predictions automatically mean success.
+Think about **weather forecasting**.
 
-Looking at only one prediction.
+Prediction:
 
-Expecting 100% accuracy.
+    25°C
 
-Confusing MAE and MSE.
+Actual temperature:
 
----
+    27°C
 
-## How This Appears in Interviews / Industry
+Error:
 
-Regression is evaluated using:
+    2°C
 
-MAE
-MSE
+If forecasts are always within **1--2°C**, the model is good.
 
-Classification is evaluated using:
+If forecasts are often **10°C off**, the model is poor.
 
-Accuracy
+Machine learning evaluation works the same way.
 
----
+------------------------------------------------------------------------
 
-## Quick Visual Mental Model
+# Common Mistakes Students Make
 
-Real Values → Predictions → Compare → Error
+-   Thinking predictions automatically mean success
+-   Looking at only one prediction
+-   Expecting 100% accuracy
+-   Confusing regression metrics with classification metrics
 
-Prediction − Reality = Error
+------------------------------------------------------------------------
 
----
+# Student Challenges
 
-## Student Challenges
+## Concept Questions
 
-Concept Questions:
+1.  What is model evaluation?
+2.  Why do we need evaluation metrics?
+3.  What is MAE?
+4.  What is MSE?
+5.  What is accuracy?
 
-1. What is model evaluation?
-2. What is MAE?
-3. What is MSE?
-4. What is accuracy?
+------------------------------------------------------------------------
 
-Coding Task:
+## Coding Task
 
-Create dataset:
+Create a dataset:
 
 Temperature → Ice Cream Sales
 
-Train model and calculate MAE and MSE.
+Train a regression model and calculate:
 
-Debugging:
+-   MAE
+-   MSE
 
-Fix:
+------------------------------------------------------------------------
 
+## Debugging Task
+
+Fix the error:
+
+``` python
 mean_absolute_error(predictions,y_test)
+```
 
----
+------------------------------------------------------------------------
 
-## Extension Challenge
+# Extension Challenge
 
-Try different test_size values.
+Try different values of:
 
-Compare MAE results.
+    test_size
 
----
+Observe how the **evaluation results change**.
 
-## Summary
+------------------------------------------------------------------------
 
-Model evaluation measures how well a machine learning model performs on real data.
+# Chapter Summary
+
+Model evaluation tells us **how well a machine learning model
+performs**.
+
+Regression models use:
+
+-   MAE
+-   MSE
+
+Classification models use:
+
+-   Accuracy
+
+Evaluation helps determine whether a model is **useful, reliable, or
+needs improvement**.
